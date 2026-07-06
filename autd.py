@@ -4,7 +4,11 @@ import sys
 
 EXTENSION = "autd"
 SEPARATOR = ";"
-BASE_DIR = Path(__file__).resolve().parent
+GLOBAL = True
+BASE_DIR = Path.cwd()
+
+if (GLOBAL == True):
+    BASE_DIR = Path(__file__).resolve().parent
 
 def list_autd():
     ficheros = Path(BASE_DIR).iterdir()
