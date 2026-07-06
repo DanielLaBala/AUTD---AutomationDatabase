@@ -13,16 +13,19 @@ if (GLOBAL == True):
 def list_autd():
     ficheros = Path(BASE_DIR).iterdir()
 
+    empty = True
+
     out = f"All saved .{EXTENSION}: \n\t"
 
     for i in ficheros:
         if i.is_file() and i.name.endswith("." + EXTENSION):
             out += i.name[:-5] + "\n\t"
+            empty = False
             
-    if out.endswith("\n\t"):
-        print(out[:-2])
-    else:
+    if empty:
         print("Empty")
+    else:
+        print(out[:-2])
 
 def add(autd_name, sequence): # Añade y modifica
     archivo = Path(BASE_DIR / f"{autd_name}.{EXTENSION}")
