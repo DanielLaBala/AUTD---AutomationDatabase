@@ -9,13 +9,13 @@ BASE_DIR = Path(__file__).resolve().parent
 def list_autd():
     ficheros = Path(BASE_DIR).iterdir()
 
-    out = f"All saved .{EXTENSION}: "
+    out = f"All saved .{EXTENSION}: \n\t"
 
     for i in ficheros:
         if i.is_file() and i.name.endswith("." + EXTENSION):
-            out += i.name + ", "
+            out += i.name[:-5] + "\n\t"
             
-    if out.endswith(", "):
+    if out.endswith("\n\t"):
         print(out[:-2])
     else:
         print("Empty")
@@ -50,7 +50,7 @@ def execute(autd_name):
         print("Autd not found. Use list to list all the saved autd.")
 
 def printStructureError(): 
-    print(f"Bad command structure. Use this instead: this_command [add/remove/modify/list/exec] [name_of_the_{EXTENSION}] [sequence]", file=sys.stderr)
+    print(f"Bad command structure. Use this instead: this_command [add/remove/list/exec] [name_of_the_{EXTENSION}] [sequence]", file=sys.stderr)
 
 if __name__ == "__main__":
     args: list[str] = sys.argv
