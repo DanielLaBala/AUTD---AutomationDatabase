@@ -57,7 +57,7 @@ def execute(autd_name):
         print("Autd not found. Use list to list all the saved autd.")
 
 def printStructureError(): 
-    print(f"Bad command structure. Use this instead: this_command [add/remove/list/exec] [name_of_the_{EXTENSION}] [sequence]", file=sys.stderr)
+    print(f"Bad command structure. Use this instead: autd [add/remove/list/exec] [name_of_the_{EXTENSION}] [sequence]", file=sys.stderr)
 
 if __name__ == "__main__":
     args: list[str] = sys.argv
@@ -79,6 +79,8 @@ if __name__ == "__main__":
                 remove(autd_name=args[1])
             case "exec":
                 execute(autd_name=args[1])
+            case _:
+                printStructureError()
 
     else:
         printStructureError()
