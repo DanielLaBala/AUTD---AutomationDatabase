@@ -4,9 +4,10 @@ import sys
 
 EXTENSION = "autd"
 SEPARATOR = ";"
+BASE_DIR = Path(__file__).resolve().parent
 
 def list_autd():
-    ficheros = Path('.').iterdir()
+    ficheros = Path(BASE_DIR).iterdir()
 
     out = f"All saved .{EXTENSION}: "
 
@@ -14,16 +15,19 @@ def list_autd():
         if i.is_file() and i.name.endswith("." + EXTENSION):
             out += i.name + ", "
             
-    print(out[:-2])
+    if out.endswith(", "):
+        print(out[:-2])
+    else:
+        print("Empty")
 
 def add(autd_name, sequence): # Añade y modifica
-    archivo = Path(f"{autd_name}.{EXTENSION}")
+    archivo = Path(BASE_DIR / f"{autd_name}.{EXTENSION}")
 
     with archivo.open("w", encoding="utf-8") as f:
         f.write(sequence)
 
 def remove(autd_name):
-    archivo = Path(f"{autd_name}.{EXTENSION}")
+    archivo = Path(BASE_DIR / f"{autd_name}.{EXTENSION}")
 
     if archivo.exists():
         archivo.unlink()
@@ -31,7 +35,7 @@ def remove(autd_name):
         print(f"{EXTENSION} not found. Use list to list all the saved {EXTENSION}.")
 
 def execute(autd_name):
-    archivo = Path(f"{autd_name}.{EXTENSION}")
+    archivo = Path(BASE_DIR / f"{autd_name}.{EXTENSION}")
 
     if archivo.exists():
         with archivo.open("r", encoding="utf-8") as f:
