@@ -3,12 +3,14 @@ import subprocess
 import sys
 
 EXTENSION = "autd"
-SEPARATOR = ";"
+SEPARATOR = ":::"
 GLOBAL = True
 BASE_DIR = Path.cwd()
 
 if (GLOBAL == True):
     BASE_DIR = Path(__file__).resolve().parent
+
+OPTIONS = "add, record, remove, list, exec, read (human)"
 
 def list_autd():
     ficheros = Path(BASE_DIR).iterdir()
@@ -52,9 +54,9 @@ def execute(autd_name):
 
         for i in comandos_separados:
             cmd = i.strip()
-            subprocess.run(cmd, shell=True, check=True)
+            subprocess.run(["powershell", "-Command", cmd], shell=True, check=True)
     else:
-        print("Autd not found. Use list to list all the saved autd.")
+        print(f"{EXTENSION} not found. Use list to list all the saved {EXTENSION}.")
 
 def read(autd_name, human: bool = True):
     archivo = Path(BASE_DIR / f"{autd_name}.{EXTENSION}")
@@ -65,26 +67,49 @@ def read(autd_name, human: bool = True):
         with archivo.open("r", encoding="utf-8") as f:
             content = f.read()
 
-    separados: list[str] = content.split(SEPARATOR)
+        separados: list[str] = content.split(SEPARATOR)
 
-    contador = 0
+        contador = 0
 
-    print("Sequence:")
+        print("Sequence:")
 
-    if human:
-        for i in separados:
-            print(f"\t [{contador}] {i}")
-            contador += 1
-    else: 
-        print(content)
+        if human:
+            for i in separados:
+                print(f"\t [{contador}] {i}")
+                contador += 1
+        else: 
+            print(content)
+    else:
+        print(autd_name + "." + EXTENSION + " doesn't exists.")
 
+def record():
+    print("Recording... (Enter 'exit' to stop)")
+
+    sequence = ""
+
+    while True:
+        cmd = input("> ")
+
+        if cmd == "exit":
+                break
+
+        sequence += cmd + SEPARATOR
+    
+    sequence = sequence[:-len(SEPARATOR)]
+
+    print("Recorded!")
+
+    file_name = input(f"Enter a name for the .{EXTENSION} file: ")
+
+    add(file_name, sequence)
+
+    print("Saved!")
 
 def printStructureError(): 
-    print(f"Bad command structure. Use this instead: autd [add/remove/list/exec/read] [name_of_the_{EXTENSION}] [sequence]", file=sys.stderr)
+    print(f"Bad command structure. Use this instead: autd [{OPTIONS}] [name_of_the_{EXTENSION}] [sequence]", file=sys.stderr)
 
 if __name__ == "__main__":
-    args: list[str] = sys.argv
-    del args[0]
+    args: list[str] = sys.argv[1:]
     args_lenght: int = len(args)
 
     # print(f"Numero argumentos: {args_lenght}")
@@ -93,6 +118,8 @@ if __name__ == "__main__":
         match args[0]:
             case "list":
                 list_autd()
+            case "record":
+                record()
             case "add":
                 if args_lenght >= 3:
                     add(autd_name=args[1], sequence=args[2])
@@ -119,6 +146,8 @@ if __name__ == "__main__":
                     read(autd_name=args[1], human=human)
                 else:
                     printStructureError()
+            case "help":
+                print("Args: " + OPTIONS)
             case _:
                 printStructureError()
 
