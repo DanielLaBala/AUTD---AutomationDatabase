@@ -56,8 +56,31 @@ def execute(autd_name):
     else:
         print("Autd not found. Use list to list all the saved autd.")
 
+def read(autd_name, human: bool = True):
+    archivo = Path(BASE_DIR / f"{autd_name}.{EXTENSION}")
+
+    content = ""
+
+    if archivo.exists():
+        with archivo.open("r", encoding="utf-8") as f:
+            content = f.read()
+
+    separados: list[str] = content.split(SEPARATOR)
+
+    contador = 0
+
+    print("Sequence:")
+
+    if human:
+        for i in separados:
+            print(f"\t [{contador}] {i}")
+            contador += 1
+    else: 
+        print(content)
+
+
 def printStructureError(): 
-    print(f"Bad command structure. Use this instead: autd [add/remove/list/exec] [name_of_the_{EXTENSION}] [sequence]", file=sys.stderr)
+    print(f"Bad command structure. Use this instead: autd [add/remove/list/exec/read] [name_of_the_{EXTENSION}] [sequence]", file=sys.stderr)
 
 if __name__ == "__main__":
     args: list[str] = sys.argv
@@ -76,9 +99,26 @@ if __name__ == "__main__":
                 else:
                     printStructureError()
             case "remove":
-                remove(autd_name=args[1])
+                if args_lenght >= 2:
+                    remove(autd_name=args[1])
+                else:
+                    printStructureError()
             case "exec":
-                execute(autd_name=args[1])
+                if args_lenght >= 2:
+                    execute(autd_name=args[1])
+                else:
+                    printStructureError()
+            case "read":
+                if args_lenght >= 2:
+                    human: bool = False
+
+                    if args_lenght >= 3:
+                        if args[2] == "human" or args[2] == "h":
+                            human = True
+
+                    read(autd_name=args[1], human=human)
+                else:
+                    printStructureError()
             case _:
                 printStructureError()
 
